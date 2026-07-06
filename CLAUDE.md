@@ -30,7 +30,28 @@ renderiza el LaTeX resultante con KaTeX. Estilos con Tailwind CSS.
 npm run dev    # desarrollo
 npm run build  # build de producción
 npm run lint   # ESLint
+npm run test   # pruebas (Vitest)
 ```
+
+## Checks antes de cada commit (obligatorio)
+
+Antes de commitear cualquier cambio de código hay que reproducir el pipeline
+localmente para no romper CI. El pipeline (`.github/workflows/ci.yml`) corre
+`npm ci` → `npm run lint` → `npm run build`. Ejecuta y verifica que **todo pase
+sin errores**:
+
+```bash
+npm run lint    # debe salir con código 0
+npm run build   # debe compilar sin errores (tsc + vite)
+npm run test    # debe pasar todas las pruebas
+```
+
+Reglas:
+
+- No commitear si alguno de estos pasos falla; arregla la causa primero.
+- Si tocas dependencias (`package.json`), regenera y commitea `package-lock.json`
+  para que `npm ci` funcione en CI.
+- No commitear artefactos de build (`dist/`, `*.tsbuildinfo`); ya están ignorados.
 
 > Estado actual: andamiaje. Componentes y servicios devuelven/usan datos de ejemplo;
 > la cámara y la conexión real con la API están marcadas con TODO.
