@@ -75,26 +75,26 @@ export default function CameraCapture({ onCapture }: Props) {
 
   if (activa) {
     return (
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 sm:col-span-2">
         <video
           ref={videoRef}
           autoPlay
           muted
           playsInline
-          className="w-full rounded-lg border border-gray-300 bg-black"
+          className="w-full rounded-xl border border-gray-300 bg-black"
         />
         <div className="flex gap-2">
           <button
             type="button"
             onClick={tomarFoto}
-            className="flex-1 rounded bg-gray-800 px-3 py-2 text-sm text-white hover:bg-gray-700"
+            className="flex-1 rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700"
           >
             Tomar foto
           </button>
           <button
             type="button"
             onClick={detener}
-            className="rounded border border-gray-400 px-3 py-2 text-sm text-gray-600 hover:border-gray-600"
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-600 transition-colors hover:border-gray-900 hover:text-gray-900"
           >
             Cancelar
           </button>
@@ -109,9 +109,22 @@ export default function CameraCapture({ onCapture }: Props) {
       <button
         type="button"
         onClick={abrir}
-        className="rounded-lg border border-dashed border-gray-400 px-4 py-6 text-gray-600 hover:border-gray-600"
+        className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-gray-300 px-4 py-8 text-gray-600 transition-colors hover:border-gray-900 hover:text-gray-900"
       >
-        Usar la cámara
+        <svg
+          className="h-6 w-6"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M3 8a2 2 0 0 1 2-2h1.5l1-1.5h5l1 1.5H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <circle cx="12" cy="12.5" r="3.5" />
+        </svg>
+        <span className="text-sm font-medium">Usar la cámara</span>
       </button>
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
