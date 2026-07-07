@@ -18,9 +18,22 @@ export default function ImageUploader({ onSelect }: Props) {
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="rounded-lg border border-dashed border-gray-400 px-4 py-6 text-gray-600 hover:border-gray-600"
+        className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-gray-300 px-4 py-8 text-gray-600 transition-colors hover:border-gray-900 hover:text-gray-900"
       >
-        Subir una imagen
+        <svg
+          className="h-6 w-6"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 16V4m0 0L8 8m4-4 4 4" />
+          <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+        </svg>
+        <span className="text-sm font-medium">Subir una imagen</span>
       </button>
       <input
         ref={inputRef}
