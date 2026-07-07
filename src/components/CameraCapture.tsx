@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Props {
   onCapture: (file: File) => void;
@@ -14,16 +14,31 @@ export default function CameraCapture({ onCapture }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const [activa, setActiva] = useState(false);
+  const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Engancha el stream al <video> cuando ya está montado (tras el re-render).
+  // Hacerlo aquí y no dentro de `abrir()` evita que `videoRef` sea null.
+  useEffect(() => {
+    streamRef.current = stream;
+    if (videoRef.current) {
+      videoRef.current.srcObject = stream;
+    }
+  }, [stream]);
+
+  // Apaga la cámara si el componente se desmonta con el stream abierto.
+  useEffect(
+    () => () => {
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+    },
+    [],
+  );
+
   /** Corta todas las pistas del stream y apaga la cámara. */
-  const detener = useCallback(() => {
-    streamRef.current?.getTracks().forEach((track) => track.stop());
-    streamRef.current = null;
-    if (videoRef.current) videoRef.current.srcObject = null;
-    setActiva(false);
-  }, []);
+  function detener() {
+    stream?.getTracks().forEach((track) => track.stop());
+    setStream(null);
+  }
 
   async function abrir() {
     setError(null);
@@ -32,17 +47,11 @@ export default function CameraCapture({ onCapture }: Props) {
       return;
     }
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      streamRef.current = stream;
-      setActiva(true);
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
+      setStream(await navigator.mediaDevices.getUserMedia({ video: true }));
     } catch {
       setError(
         "No se pudo acceder a la cámara. Revisa los permisos o usa «Subir una imagen».",
       );
-      setActiva(false);
     }
   }
 
@@ -70,10 +79,7 @@ export default function CameraCapture({ onCapture }: Props) {
     }, "image/png");
   }
 
-  // Apaga la cámara si el componente se desmonta con el stream abierto.
-  useEffect(() => detener, [detener]);
-
-  if (activa) {
+  if (stream) {
     return (
       <div className="flex flex-col gap-2 sm:col-span-2">
         <video
