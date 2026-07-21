@@ -18,7 +18,8 @@ export default function ImageUploader({ onSelect }: Props) {
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-gray-300 px-4 py-8 text-gray-600 transition-colors hover:border-gray-900 hover:text-gray-900"
+        aria-label="Subir una imagen con una expresión matemática"
+        className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-gray-300 px-4 py-8 text-gray-600 transition-colors hover:border-gray-900 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
       >
         <svg
           className="h-6 w-6"
@@ -39,6 +40,8 @@ export default function ImageUploader({ onSelect }: Props) {
         ref={inputRef}
         type="file"
         accept="image/png,image/jpeg,image/webp"
+        aria-hidden="true"
+        tabIndex={-1}
         className="hidden"
         onChange={handleChange}
       />

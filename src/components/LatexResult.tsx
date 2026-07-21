@@ -23,6 +23,7 @@ export default function LatexResult({ latex }: Props) {
       </h2>
 
       <div
+        aria-label={`Expresión reconocida: ${latex}`}
         className="overflow-x-auto py-2 text-gray-900"
         dangerouslySetInnerHTML={{ __html: renderLatex(latex) }}
       />
@@ -34,7 +35,8 @@ export default function LatexResult({ latex }: Props) {
       <button
         type="button"
         onClick={copy}
-        className="self-start rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700"
+        aria-label="Copiar LaTeX al portapapeles"
+        className="self-start rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
       >
         {copiado ? "¡Copiado!" : "Copiar LaTeX"}
       </button>
