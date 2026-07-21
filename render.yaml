@@ -9,7 +9,8 @@ services:
     name: mathscribe-web
     runtime: static
     plan: free
-    region: oregon
+    # Sin `region`: los sitios estáticos se sirven desde la red de distribución
+    # global de Render, por lo que no admiten esa propiedad.
     buildCommand: npm ci && npm run build
     staticPublishPath: ./dist
     autoDeploy: true
