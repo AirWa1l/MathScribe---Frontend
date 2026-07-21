@@ -1,6 +1,6 @@
-# CLAUDE.md — Frontend
+# Guía de contribución — Frontend
 
-Guía para sesiones con Claude Code en el frontend de MathScribe.
+Convenciones y verificaciones para trabajar en el frontend de MathScribe.
 
 ## Qué es esto
 
@@ -53,5 +53,6 @@ Reglas:
   para que `npm ci` funcione en CI.
 - No commitear artefactos de build (`dist/`, `*.tsbuildinfo`); ya están ignorados.
 
-> Estado actual: andamiaje. Componentes y servicios devuelven/usan datos de ejemplo;
-> la cámara y la conexión real con la API están marcadas con TODO.
+> Estado actual: funcional y desplegado. El flujo completo —captura, reconocimiento,
+> verificación del LaTeX, resolución paso a paso y panel de métricas— está operativo
+> y cubierto por pruebas.
