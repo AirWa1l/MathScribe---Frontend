@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import CameraCapture from "../components/CameraCapture";
 import ImageUploader from "../components/ImageUploader";
@@ -17,10 +17,21 @@ import { renderLatex } from "../lib/katex";
 export default function HomePage() {
   const { data, loading, error, run } = useRecognition();
   const solucion = useSolve();
+  // Se conserva la última imagen para poder reintentar sin obligar a la persona
+  // a volver a capturarla cuando el fallo fue de red o del servidor.
+  const [ultimaImagen, setUltimaImagen] = useState<File | null>(null);
 
   const latex = data?.latex ?? "";
   const sinExpresion = data !== null && latex.trim() === "";
   const { reset } = solucion;
+
+  const reconocer = useCallback(
+    (imagen: File) => {
+      setUltimaImagen(imagen);
+      run(imagen);
+    },
+    [run],
+  );
 
   // Al reconocer una expresión distinta, la solución anterior deja de ser válida.
   useEffect(() => {
@@ -46,30 +57,52 @@ export default function HomePage() {
           Captura tu problema
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <ImageUploader onSelect={run} />
-          <CameraCapture onCapture={run} />
+          <ImageUploader onSelect={reconocer} />
+          <CameraCapture onCapture={reconocer} />
         </div>
       </section>
 
-      {loading && (
-        <div className="flex items-center justify-center gap-3 rounded-2xl border border-gray-200 bg-white p-4 text-gray-500 shadow-sm">
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-800" />
-          Reconociendo…
-        </div>
-      )}
+      {/* Los cambios de estado se anuncian a los lectores de pantalla, que de
+          otro modo no percibirían que la aplicación está trabajando. */}
+      <div aria-live="polite" className="contents">
+        {loading && (
+          <div className="flex items-center justify-center gap-3 rounded-2xl border border-gray-200 bg-white p-4 text-gray-500 shadow-sm">
+            <span
+              aria-hidden="true"
+              className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-800"
+            />
+            Reconociendo…
+          </div>
+        )}
 
-      {error && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-          {error}
-        </div>
-      )}
+        {error && (
+          <div
+            role="alert"
+            className="flex flex-col gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+          >
+            <p>No pudimos procesar la imagen. {error}</p>
+            {ultimaImagen && (
+              <button
+                type="button"
+                onClick={() => run(ultimaImagen)}
+                className="self-start rounded-lg border border-red-300 px-3 py-1.5 text-xs font-medium transition-colors hover:bg-red-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+              >
+                Reintentar
+              </button>
+            )}
+          </div>
+        )}
 
-      {sinExpresion && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-          No se reconoció ninguna expresión matemática en la imagen. Prueba con
-          mejor iluminación y encuadrando solo la expresión.
-        </div>
-      )}
+        {sinExpresion && (
+          <div
+            role="status"
+            className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800"
+          >
+            No se reconoció ninguna expresión matemática en la imagen. Prueba con
+            mejor iluminación y encuadrando solo la expresión.
+          </div>
+        )}
+      </div>
 
       {latex && (
         <>
@@ -84,16 +117,27 @@ export default function HomePage() {
                 type="button"
                 onClick={() => solucion.run(latex)}
                 disabled={solucion.loading}
-                className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+                aria-label="Resolver la expresión reconocida paso a paso"
+                className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:bg-gray-400"
               >
                 {solucion.loading ? "Resolviendo…" : "Resolver"}
               </button>
             </div>
 
             {solucion.error && (
-              <p className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                {solucion.error}
-              </p>
+              <div
+                role="alert"
+                className="flex flex-col gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+              >
+                <p>No pudimos resolver la expresión. {solucion.error}</p>
+                <button
+                  type="button"
+                  onClick={() => solucion.run(latex)}
+                  className="self-start rounded-lg border border-red-300 px-3 py-1.5 text-xs font-medium transition-colors hover:bg-red-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                >
+                  Reintentar
+                </button>
+              </div>
             )}
 
             {solucion.data && (
