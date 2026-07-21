@@ -23,8 +23,35 @@ jobs:
       - name: Lint (ESLint)
         run: npm run lint
 
-      - name: Pruebas (Vitest)
-        run: npm run test
+      - name: Pruebas y cobertura (Vitest)
+        run: npm run test:cov
 
       - name: Build
         run: npm run build
+
+      - name: Publicar reporte de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura-frontend
+          path: coverage
+          if-no-files-found: ignore
+
+  deploy:
+    # Sólo despliega lo que ya pasó validación, y nunca desde un pull request.
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar despliegue en Render
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "::warning::No hay RENDER_DEPLOY_HOOK_URL configurado; se omite el despliegue."
+            exit 0
+          fi
+          echo "Notificando a Render el commit ${GITHUB_SHA::7}…"
+          curl --fail --silent --show-error --location \
+            --request POST "$RENDER_DEPLOY_HOOK_URL"
+          echo "Despliegue solicitado correctamente."

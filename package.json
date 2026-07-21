@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "test:cov": "vitest run --coverage"
   },
   "dependencies": {
     "katex": "^0.16.11",
@@ -27,6 +28,7 @@
     "@typescript-eslint/eslint-plugin": "^8.13.0",
     "@typescript-eslint/parser": "^8.13.0",
     "@vitejs/plugin-react": "^4.3.3",
+    "@vitest/coverage-v8": "^2.1.4",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.1",
     "eslint-plugin-react-hooks": "^4.6.2",
