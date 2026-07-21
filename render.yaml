@@ -8,9 +8,10 @@ services:
   - type: web
     name: mathscribe-web
     runtime: static
-    plan: free
-    # Sin `region`: los sitios estáticos se sirven desde la red de distribución
-    # global de Render, por lo que no admiten esa propiedad.
+    # Un sitio estático no declara `plan` ni `region`: no se ejecuta sobre una
+    # instancia ni se aloja en una región concreta, se sirve desde la red de
+    # distribución global de Render. Ambas propiedades sí aplican, en cambio, al
+    # servicio web del backend.
     buildCommand: npm ci && npm run build
     staticPublishPath: ./dist
     autoDeploy: true
