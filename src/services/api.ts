@@ -1,6 +1,10 @@
 // Cliente HTTP de la API de MathScribe.
 
-import type { RecognitionResponse, SolveResponse } from "../types";
+import type {
+  MetricsResponse,
+  RecognitionResponse,
+  SolveResponse,
+} from "../types";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api/v1";
 
@@ -25,5 +29,12 @@ export async function solve(latex: string): Promise<SolveResponse> {
     body: JSON.stringify({ latex }),
   });
   if (!res.ok) throw new Error(`Error de resolución: ${res.status}`);
+  return res.json();
+}
+
+/** Consulta las métricas técnicas del backend (PB-14 a PB-16). */
+export async function getMetrics(): Promise<MetricsResponse> {
+  const res = await fetch(`${BASE_URL}/metrics`);
+  if (!res.ok) throw new Error(`Error al consultar las métricas: ${res.status}`);
   return res.json();
 }

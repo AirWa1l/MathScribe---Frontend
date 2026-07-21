@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import CameraCapture from "../components/CameraCapture";
 import ImageUploader from "../components/ImageUploader";
 import LatexResult from "../components/LatexResult";
+import MetricsPanel from "../components/MetricsPanel";
 import SolutionSteps from "../components/SolutionSteps";
 import { useRecognition } from "../hooks/useRecognition";
 import { useSolve } from "../hooks/useSolve";
@@ -179,6 +180,8 @@ export default function HomePage() {
           </section>
         </>
       )}
+
+      <MetricsPanel />
     </main>
   );
 }
